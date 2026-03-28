@@ -4,29 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Digital</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
+
 <div class="amb amb-1"></div>
 <div class="amb amb-2"></div>
+
 <header>
     <div class="eyebrow">Calculadora Online Gratuita</div>
     <h1>Cálculo <em>Digital</em></h1>
-    <p>DIgite o cálculo desejado</p>
+    <p>Digite o cálculo desejado</p>
 </header>
+
 <div class="card">
+
     <div class="input-group">
         <label>Primeiro Número</label>
         <input type="number" id="num1" placeholder="0">
     </div>
- 
+
     <div class="divider">operação</div>
- 
+
     <div class="input-group">
         <label>Segundo Número</label>
         <input type="number" id="num2" placeholder="0">
     </div>
+
     <div class="btn-grid">
         <button class="btn btn-op" onclick="calcular('+')">+ Somar</button>
         <button class="btn btn-op" onclick="calcular('-')">− Subtrair</button>
@@ -34,60 +40,67 @@
         <button class="btn btn-op" onclick="calcular('/')">÷ Dividir</button>
         <button class="btn btn-clear" onclick="limpar()">✕ Limpar</button>
     </div>
+
     <div class="result-box">
         <span class="result-label">Resultado</span>
         <div class="result-value" id="resultado">—</div>
     </div>
+
 </div>
+
 <footer>
     © 2026 Ana Caroline Santos — Cálculo Online
 </footer>
+
 <script>
-    // URL base da API C# rodando localmente
-    const API_URL = "http://localhost:5000/api/calculadora";
-    async function calcular(operacao) {
-        const campo1 = document.getElementById("num1").value;
-        const campo2 = document.getElementById("num2").value;
-        if (campo1 === "" || campo2 === "") {
-            mostrarErro("Preencha os dois campos.");
-            return;
-        }
-        const a = Number(campo1);
-        const b = Number(campo2);
- 
-        if (isNaN(a) || isNaN(b)) {
-            mostrarErro("Digite valores válidos.");
-            return;
-        }
-        try {
-            const response = await fetch(
-                `${API_URL}/calcular?a=${a}&b=${b}&op=${encodeURIComponent(operacao)}`
-            );
-            if (!response.ok) {
-                const erro = await response.json();
-                mostrarErro(erro.mensagem || "Erro no cálculo.");
+function calcular(operacao) {
+    const a = Number(document.getElementById("num1").value);
+    const b = Number(document.getElementById("num2").value);
+
+    if (isNaN(a) || isNaN(b)) {
+        mostrarErro("Digite valores válidos.");
+        return;
+    }
+
+    let resultado;
+
+    switch (operacao) {
+        case '+':
+            resultado = a + b;
+            break;
+        case '-':
+            resultado = a - b;
+            break;
+        case '*':
+            resultado = a * b;
+            break;
+        case '/':
+            if (b === 0) {
+                mostrarErro("Não pode dividir por zero.");
                 return;
             }
-            const data = await response.json();
-            const res = document.getElementById("resultado");
-            res.className = "result-value";
-            res.textContent = Number(data.resultado.toPrecision(12))
-                .toLocaleString("pt-BR", { maximumFractionDigits: 10 });
-        } catch (e) {
-            mostrarErro("Não foi possível conectar à API.");
-        }
+            resultado = a / b;
+            break;
     }
-    function limpar() {
-        document.getElementById("num1").value = "";
-        document.getElementById("num2").value = "";
-        document.getElementById("resultado").className = "result-value";
-        document.getElementById("resultado").textContent = "—";
-    }
-    function mostrarErro(msg) {
-        const res = document.getElementById("resultado");
-        res.className = "result-value error";
-        res.textContent = msg;
-    }
+
+    const res = document.getElementById("resultado");
+    res.className = "result-value";
+    res.textContent = resultado.toLocaleString("pt-BR", { maximumFractionDigits: 10 });
+}
+
+function limpar() {
+    document.getElementById("num1").value = "";
+    document.getElementById("num2").value = "";
+    document.getElementById("resultado").className = "result-value";
+    document.getElementById("resultado").textContent = "—";
+}
+
+function mostrarErro(msg) {
+    const res = document.getElementById("resultado");
+    res.className = "result-value error";
+    res.textContent = msg;
+}
 </script>
+
 </body>
 </html>
